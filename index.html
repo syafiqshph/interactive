@@ -1,7 +1,6 @@
 <!DOCTYPE html>
 <html lang="ms">
 <head>
-    
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>DS Reno - AI to Live Web Ecosystem</title>
@@ -25,8 +24,6 @@
                 <a href="./harga.html" class="hover:text-emerald-400 transition-colors">Pelan Komuniti</a>
             </nav>
             
-            
-
             <!-- Aksi Kanan -->
             <div class="flex items-center space-x-6">
                 <a href="#" class="text-sm font-medium text-slate-400 hover:text-white transition">Akaun</a>
@@ -52,14 +49,26 @@
             <p class="text-base md:text-lg text-slate-400 max-w-xl leading-relaxed">
                 Platform deployment khusus untuk usahawan digital Malaysia. Tukar output mentah daripada AI kegemaran anda menjadi produk web pelbagai halaman yang pantas, selamat, dan sedia untuk klien dalam beberapa saat.
             </p>
-            <div class="flex flex-col sm:flex-row gap-4 pt-4">
-                <a href="#" class="bg-slate-800 hover:bg-slate-750 text-white font-semibold px-8 py-4 rounded-xl border border-slate-700 transition shadow-inner text-center">
-                    Buka Workspace
-                </a>
-                <a href="#" class="bg-gradient-to-r from-emerald-500 to-teal-600 text-slate-950 font-bold px-8 py-4 rounded-xl transition text-center hover:opacity-90">
-                    Pelajari Studio Alatan →
-                </a>
+            
+            <!-- ========================================================== -->
+            <!-- BORANG BAHARU: TEMPAT TAIP & SIMPAN WORKSPACE -->
+            <!-- ========================================================== -->
+            <div class="bg-slate-900/50 p-6 rounded-xl border border-slate-800 max-w-xl space-y-4">
+                <h3 class="text-sm font-bold text-emerald-400 tracking-wide uppercase">Uji Borang PostgreSQL Lokal</h3>
+                <div class="space-y-2">
+                    <label class="text-xs text-slate-400 block">Nama Workspace / Projek</label>
+                    <input type="text" id="inputNamaProjek" placeholder="Contoh: Projek Renovasi Kedai" class="w-full bg-[#0B0F19] border border-slate-700 rounded-lg px-4 py-2.5 text-sm text-white focus:outline-none focus:border-emerald-500 transition">
+                </div>
+                <div class="space-y-2">
+                    <label class="text-xs text-slate-400 block">Deskripsi Singkat</label>
+                    <input type="text" id="inputDeskripsiProjek" placeholder="Contoh: Sila siapkan sebelum Oktober" class="w-full bg-[#0B0F19] border border-slate-700 rounded-lg px-4 py-2.5 text-sm text-white focus:outline-none focus:border-emerald-500 transition">
+                </div>
+                <button onclick="ambilDataDanSimpan()" class="w-full bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-600 hover:to-teal-700 text-slate-950 font-bold py-3 rounded-lg text-sm transition shadow-lg shadow-emerald-500/10">
+                    🚀 Hantar & Simpan Ke PostgreSQL
+                </button>
             </div>
+            <!-- ========================================================== -->
+
         </div>
 
         <!-- Visual Kanan (Mockup Editor Kod Alternatif) -->
@@ -138,43 +147,58 @@ project.deploy().then((url) => {
             </div>
         </div>
     </section>
-<script>
-// 1. Ini adalah alamat jambatan Ngrok anda tadi
-const API_URL = "https://glazing-evacuee-usage.ngrok-free.dev/api/workspace";
 
-// 2. Fungsi ini dipanggil apabila butang bina/simpan workspace ditekan
-function simpanWorkspaceKeDatabase(namaWorkspace, deskripsiWorkspace) {
-    <button onclick="simpanWorkspaceKeDatabase('Projek Renovasi Kedai', 'Sila siapkan sebelum Oktober')">
-    Uji Simpan Workspace
-</button>
-    // Kita hantar data ke server komputer anda menggunakan fungsi fetch
-    fetch(API_URL, {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({
-            name: namaWorkspace,
-            description: deskripsiWorkspace || "Tiada deskripsi"
-        })
-    })
-    .then(response => {
-        if (!response.ok) {
-            throw new Error('Gagal hantar data ke server');
+    <!-- ========================================================== -->
+    <!-- JAVASCRIPT JAMBATAN KE POSTGRES LOKAL -->
+    <!-- ========================================================== -->
+    <script>
+    // Alamat kekal daripada Ngrok anda
+    const API_URL = "https://glazing-evacuee-usage.ngrok-free.dev/api/workspace";
+
+    // Fungsi tambahan untuk membaca teks yang ditaip oleh anda di borang skrin
+    function ambilDataDanSimpan() {
+        const namaInput = document.getElementById('inputNamaProjek').value;
+        const deskripsiInput = document.getElementById('inputDeskripsiProjek').value;
+
+        if (!namaInput) {
+            alert("Sila taip nama projek terlebih dahulu!");
+            return;
         }
-        return response.json();
-    })
-    .then(data => {
-        // Jika berjaya disimpan ke PostgreSQL lokal anda, kotak amaran ini akan keluar
-        alert("🎉 Berjaya! Workspace '" + namaWorkspace + "' selamat disimpan di PostgreSQL komputer anda!");
-        console.log("Respon dari server:", data);
-    })
-    .catch(error => {
-        console.error("Ralat berlaku:", error);
-        alert("❌ Gagal berhubung. Pastikan server Node.js & Ngrok di komputer anda sedang menyala!");
-    });
-}
-</script>
+
+        // Jalankan fungsi hantar data
+        simpanWorkspaceKeDatabase(namaInput, deskripsiInput);
+    }
+
+    // Fungsi asal untuk menghantar data ke database komputer anda
+    function simpanWorkspaceKeDatabase(namaWorkspace, deskripsiWorkspace) {
+        fetch(API_URL, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                name: namaWorkspace,
+                description: deskripsiWorkspace || "Tiada deskripsi"
+            })
+        })
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Gagal hantar data ke server');
+            }
+            return response.json();
+        })
+        .then(data => {
+            alert("🎉 Berjaya! Workspace '" + namaWorkspace + "' selamat disimpan di PostgreSQL komputer anda!");
+            // Mengosongkan semula kotak input selepas berjaya hantar
+            document.getElementById('inputNamaProjek').value = '';
+            document.getElementById('inputDeskripsiProjek').value = '';
+        })
+        .catch(error => {
+            console.error("Ralat berlaku:", error);
+            alert("❌ Gagal berhubung! Sila pastikan dua perkara:\n1. Server Node.js (node server.js) sedang menyala.\n2. Sesi Ngrok sedang aktif (online).");
+        });
+    }
+    </script>
     
 </body>
 </html>
