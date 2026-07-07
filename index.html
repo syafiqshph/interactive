@@ -138,6 +138,43 @@ project.deploy().then((url) => {
             </div>
         </div>
     </section>
+<script>
+// 1. Ini adalah alamat jambatan Ngrok anda tadi
+const API_URL = "https://glazing-evacuee-usage.ngrok-free.dev/api/workspace";
 
+// 2. Fungsi ini dipanggil apabila butang bina/simpan workspace ditekan
+function simpanWorkspaceKeDatabase(namaWorkspace, deskripsiWorkspace) {
+    <button onclick="simpanWorkspaceKeDatabase('Projek Renovasi Kedai', 'Sila siapkan sebelum Oktober')">
+    Uji Simpan Workspace
+</button>
+    // Kita hantar data ke server komputer anda menggunakan fungsi fetch
+    fetch(API_URL, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+            name: namaWorkspace,
+            description: deskripsiWorkspace || "Tiada deskripsi"
+        })
+    })
+    .then(response => {
+        if (!response.ok) {
+            throw new Error('Gagal hantar data ke server');
+        }
+        return response.json();
+    })
+    .then(data => {
+        // Jika berjaya disimpan ke PostgreSQL lokal anda, kotak amaran ini akan keluar
+        alert("🎉 Berjaya! Workspace '" + namaWorkspace + "' selamat disimpan di PostgreSQL komputer anda!");
+        console.log("Respon dari server:", data);
+    })
+    .catch(error => {
+        console.error("Ralat berlaku:", error);
+        alert("❌ Gagal berhubung. Pastikan server Node.js & Ngrok di komputer anda sedang menyala!");
+    });
+}
+</script>
+    
 </body>
 </html>
